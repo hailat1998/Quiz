@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface QuizDoa {
     @Query("SELECT * FROM Question WHERE ( :category)")
-    fun getQuestions(category : String) : Flow<List<Question>>
+     fun getQuestions(category : String) : Flow<List<Question>>
 }

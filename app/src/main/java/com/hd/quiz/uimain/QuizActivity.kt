@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -25,7 +26,9 @@ class QuizActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+     setContent{
+         Home_Content()
+     }
     }
     companion object {
           private const val CATEGORY = "selectedCategory"
@@ -40,7 +43,7 @@ class QuizActivity : ComponentActivity() {
 
 
 @Composable
-fun Home_Content(viewModel: ViewModel, ){
+fun Home_Content(/*viewModel: ViewModel, */){
     Scaffold(bottomBar = {
         Icon(Icons.Sharp.Home, contentDescription = null)
     }) {

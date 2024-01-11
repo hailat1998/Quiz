@@ -1,0 +1,76 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "b655980c678314d37b1886c10a884889",
+    "entities": [
+      {
+        "tableName": "Question",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `typeOfQ` TEXT NOT NULL, `question` TEXT NOT NULL, `choice` TEXT, `choice2` TEXT, `choice3` TEXT, `choice4` TEXT, `category` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeOfQ",
+            "columnName": "typeOfQ",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "question",
+            "columnName": "question",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "choice",
+            "columnName": "choice",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "choice2",
+            "columnName": "choice2",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "choice3",
+            "columnName": "choice3",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "choice4",
+            "columnName": "choice4",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b655980c678314d37b1886c10a884889')"
+    ]
+  }
+}
