@@ -1,12 +1,10 @@
-package com.hd.quiz
+package com.hd.quiz.api
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import java.util.UUID
+import com.squareup.moshi.JsonClass
 
-@Entity
+@JsonClass(generateAdapter = true)
 data class Question(
-    @PrimaryKey val id: UUID,
+    val id: String,
     val typeOfQ : String,
     val question: String,
     val choice: String?,

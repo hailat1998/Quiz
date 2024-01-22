@@ -2,7 +2,7 @@ package com.hd.quiz.database
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.hd.quiz.Question
+import com.hd.quiz.api.Question
 import kotlinx.coroutines.flow.Flow
 
 @Dao

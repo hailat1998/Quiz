@@ -2,7 +2,7 @@ package com.hd.quiz.repo
 
 import android.content.Context
 import androidx.room.Room
-import com.hd.quiz.Question
+import com.hd.quiz.api.Question
 import com.hd.quiz.database.QuizDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
