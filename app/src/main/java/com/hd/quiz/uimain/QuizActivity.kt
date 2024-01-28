@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material.icons.sharp.Home
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -39,7 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.hd.quiz.MainActivity
+import com.hd.quiz.api.Question
 import com.hd.quiz.ui.theme.QuizTheme
+import java.nio.file.WatchEvent
 import java.util.Locale
 
 class QuizActivity : ComponentActivity() {
@@ -58,7 +61,6 @@ class QuizActivity : ComponentActivity() {
          selected?.let { Log.d("QUIZ", it) }
          selectedCategory?.let { Log.d("QUIZ", it) }
          QuizTheme {
-
              Home_Content(viewModel = QuizViewModel(), selected!!, selectedCategory!!)
          }
      }
@@ -76,9 +78,14 @@ class QuizActivity : ComponentActivity() {
 
 
 @Composable
-fun Home_Content(viewModel: ViewModel, selected : String = " ", selectedCategory: String = " "){
+fun Home_Content(viewModel: ViewModel, selected : String , selectedCategory: String ){
     val context = LocalContext.current
     val lazy = rememberLazyListState()
+    LaunchedEffect(true){
+        if(lazy.firstVisibleItemIndex == -1){
+
+        }
+    }
     Scaffold(bottomBar = {
         Icon(Icons.Sharp.Home, contentDescription = null, modifier = Modifier
             .padding(150.dp, 10.dp)
@@ -90,6 +97,61 @@ fun Home_Content(viewModel: ViewModel, selected : String = " ", selectedCategory
         }
     }
 }
+
+
+@Composable
+fun TypeQ(question: Question){
+    when(question.typeOfQ){
+        "T/f" -> TorF(question)
+        "Choice" -> ChoiceAn(question)
+        else -> FillAn(question)
+    }
+}
+
+@Composable
+fun TorF(question: Question){
+   val ans = remember {
+       mutableStateOf("")
+   }
+    Text(text = question.question)
+    Row(Modifier.padding(8.dp)){
+        Text(text = "True")
+        RadioButton(selected = ans.value ==  "true", onClick = { ans.value = "true"})
+        Text(text = "False")
+        RadioButton(selected = ans.value ==  "False", onClick = { ans.value = "False"})
+    }
+}
+
+@Composable
+fun ChoiceAn(question: Question){
+    val ans = remember {
+        mutableStateOf("")
+    }
+    Text(text = question.question)
+    Column {
+        Text(text = question.choice!!, overflow = )
+        //insert each of this into Row
+        RadioButton(selected = ans.value == question.choice!! , onClick = { ans.value = question.choice!!})
+        Text(text = question.choice2!!)
+        RadioButton(selected = ans.value == question.choice2!! , onClick = { ans.value = question.choice2!!})
+        Text(text = question.choice3!!)
+        RadioButton(selected = ans.value == question.choice3!! , onClick = { ans.value = question.choice3!!})
+        Text(text = question.choice4!!)
+        RadioButton(selected = ans.value == question.choice4!! , onClick = { ans.value = question.choice4!!})
+    }
+}
+
+@Composable
+fun FillAn(question: Question){
+    val ans = remember {
+        mutableStateOf("")
+    }
+    Column {
+        Text(text = question.question)
+        OutlinedTextField(value = ans.value, onValueChange = {ans.value = it})
+    }
+}
+
 
 
 
