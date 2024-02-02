@@ -1,13 +1,8 @@
 package com.hd.quiz
 
-import android.content.Intent
-import android.graphics.drawable.Icon
-import android.os.Build
 import android.os.Bundle
-import android.text.Layout.Alignment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,16 +28,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hd.quiz.ui.theme.QuizTheme
 import com.hd.quiz.uimain.QuizActivity
-import com.hd.quiz.uimain.SubmitActivity
-import java.util.Locale.Category
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,7 +101,7 @@ fun Select(){
                 .padding(16.dp)
         )
 
-        Button(onClick = { context.startActivity(SubmitActivity.newIntent(context)) },
+        Button(onClick = { /*context.startActivity(SubmitActivity.newIntent(context))*/ },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth()
             ) {

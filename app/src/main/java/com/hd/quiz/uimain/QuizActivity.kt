@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,13 +17,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material.icons.sharp.Home
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -32,24 +26,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import com.hd.quiz.MainActivity
 import com.hd.quiz.api.Question
 import com.hd.quiz.list
 import com.hd.quiz.ui.theme.QuizTheme
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.toList
-import java.nio.file.WatchEvent
-import java.util.Locale
 
 class QuizActivity : ComponentActivity() {
 
@@ -87,24 +77,28 @@ class QuizActivity : ComponentActivity() {
 fun Home_Content(viewModel: QuizViewModel , selected : String , selectedCategory: String ){
     val context = LocalContext.current
     val lazy = rememberLazyListState()
-    val list: MutableList<Question> = mutableListOf()
+    val update by rememberUpdatedState(newValue = lazy)
+    val list2: MutableList<Question> = mutableListOf()
     LaunchedEffect(true){
-        list.addAll(viewModel.getQuestions(selectedCategory, selected).toList())
+        list2.addAll(viewModel.getQuestions(selectedCategory, selected).toList())
+        println("received those $list2")
     }
     Scaffold(bottomBar = {
         Icon(Icons.Sharp.Home, contentDescription = null, modifier = Modifier
             .padding(80.dp, 10.dp)
             .clickable { context.startActivity(Intent(context, MainActivity::class.java)) })
-
-    },
+                         },
         ) {
-        if(list.isEmpty()){
-            CircularProgressIndicator()
-        }
-        LazyColumn(Modifier.padding(paddingValues = it), state = lazy){
-          itemsIndexed(list){item, index ->
-              TypeQ(question = index)
-          }
+      if (remember { derivedStateOf { update.firstVisibleItemIndex } }.value != -1) {
+            LazyColumn(Modifier.padding(paddingValues = it), state = update) {
+                itemsIndexed(list2) { item, index ->
+                    TypeQ(question = index)
+                }
+            }
+       } else {
+           Box(contentAlignment = Alignment.Center){
+                CircularProgressIndicator()
+            }
         }
     }
 }
@@ -171,8 +165,10 @@ fun BottomBar(context: Context){
     Row(Modifier.fillMaxWidth()) {
         Icon(Icons.Sharp.Home, contentDescription = null, modifier = Modifier
             .padding(80.dp, 10.dp)
-            .clickable { context.startActivity(Intent(context , MainActivity::class.java)) })
-             Icon(Icons.Filled.ArrowForward , contentDescription = null, modifier = Modifier.padding( 80.dp).clickable {  })
+            .clickable { context.startActivity(Intent(context, MainActivity::class.java)) })
+             Icon(Icons.Filled.ArrowForward , contentDescription = null, modifier = Modifier
+                 .padding(80.dp)
+                 .clickable { })
          }
 }
 

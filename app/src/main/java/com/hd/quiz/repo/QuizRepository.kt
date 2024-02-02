@@ -3,6 +3,7 @@ package com.hd.quiz.repo
 import com.hd.quiz.api.QuizInterface
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
