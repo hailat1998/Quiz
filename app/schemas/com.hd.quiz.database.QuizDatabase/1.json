@@ -2,16 +2,16 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b655980c678314d37b1886c10a884889",
+    "identityHash": "9be714a0e9ac1920e261670076df5bdf",
     "entities": [
       {
         "tableName": "Question",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `typeOfQ` TEXT NOT NULL, `question` TEXT NOT NULL, `choice` TEXT, `choice2` TEXT, `choice3` TEXT, `choice4` TEXT, `category` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `typeOfQ` TEXT NOT NULL, `question` TEXT NOT NULL, `choice` TEXT, `choice2` TEXT, `choice3` TEXT, `choice4` TEXT, `category` TEXT NOT NULL, `fieldOfInterest` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "BLOB",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -55,13 +55,17 @@
             "columnName": "category",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "fieldOfInterest",
+            "columnName": "fieldOfInterest",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
+          "columnNames": []
         },
         "indices": [],
         "foreignKeys": []
@@ -70,7 +74,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b655980c678314d37b1886c10a884889')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9be714a0e9ac1920e261670076df5bdf')"
     ]
   }
 }

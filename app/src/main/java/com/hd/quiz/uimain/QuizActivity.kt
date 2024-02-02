@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material.icons.sharp.Home
 import androidx.compose.material3.Button
@@ -41,7 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.hd.quiz.MainActivity
 import com.hd.quiz.api.Question
+import com.hd.quiz.list
 import com.hd.quiz.ui.theme.QuizTheme
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.toList
 import java.nio.file.WatchEvent
 import java.util.Locale
 
@@ -73,27 +79,32 @@ class QuizActivity : ComponentActivity() {
                 putExtra(CATEGORY , category)
                 putExtra(FIELD_OF_INTEREST , fieldOfInterest)
             }
-    }
+       }
 }
 
 
 @Composable
-fun Home_Content(viewModel: ViewModel, selected : String , selectedCategory: String ){
+fun Home_Content(viewModel: QuizViewModel , selected : String , selectedCategory: String ){
     val context = LocalContext.current
     val lazy = rememberLazyListState()
+    val list: MutableList<Question> = mutableListOf()
     LaunchedEffect(true){
-        if(lazy.firstVisibleItemIndex == -1){
-
-        }
+        list.addAll(viewModel.getQuestions(selectedCategory, selected).toList())
     }
     Scaffold(bottomBar = {
         Icon(Icons.Sharp.Home, contentDescription = null, modifier = Modifier
-            .padding(150.dp, 10.dp)
+            .padding(80.dp, 10.dp)
             .clickable { context.startActivity(Intent(context, MainActivity::class.java)) })
 
-    }) {
+    },
+        ) {
+        if(list.isEmpty()){
+            CircularProgressIndicator()
+        }
         LazyColumn(Modifier.padding(paddingValues = it), state = lazy){
-
+          itemsIndexed(list){item, index ->
+              TypeQ(question = index)
+          }
         }
     }
 }
@@ -104,7 +115,7 @@ fun TypeQ(question: Question){
     when(question.typeOfQ){
         "T/f" -> TorF(question)
         "Choice" -> ChoiceAn(question)
-        else -> FillAn(question)
+        "fill" -> FillAn(question)
     }
 }
 
@@ -114,7 +125,10 @@ fun TorF(question: Question){
        mutableStateOf("")
    }
     Text(text = question.question)
-    Row(Modifier.padding(8.dp)){
+    Row(
+        Modifier
+            .padding(8.dp)
+            .fillMaxWidth()){
         Text(text = "True")
         RadioButton(selected = ans.value ==  "true", onClick = { ans.value = "true"})
         Text(text = "False")
@@ -128,8 +142,8 @@ fun ChoiceAn(question: Question){
         mutableStateOf("")
     }
     Text(text = question.question)
-    Column {
-        Text(text = question.choice!!, overflow = )
+    Column(Modifier.fillMaxWidth()) {
+        Text(text = question.choice!! )
         //insert each of this into Row
         RadioButton(selected = ans.value == question.choice!! , onClick = { ans.value = question.choice!!})
         Text(text = question.choice2!!)
@@ -146,10 +160,20 @@ fun FillAn(question: Question){
     val ans = remember {
         mutableStateOf("")
     }
-    Column {
+    Column(Modifier.fillMaxWidth()) {
         Text(text = question.question)
         OutlinedTextField(value = ans.value, onValueChange = {ans.value = it})
     }
+}
+
+@Composable
+fun BottomBar(context: Context){
+    Row(Modifier.fillMaxWidth()) {
+        Icon(Icons.Sharp.Home, contentDescription = null, modifier = Modifier
+            .padding(80.dp, 10.dp)
+            .clickable { context.startActivity(Intent(context , MainActivity::class.java)) })
+             Icon(Icons.Filled.ArrowForward , contentDescription = null, modifier = Modifier.padding( 80.dp).clickable {  })
+         }
 }
 
 

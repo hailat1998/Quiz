@@ -6,16 +6,26 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
+import java.util.concurrent.TimeUnit
 
 class QuizRepository {
         private var api : QuizInterface
         init {
                 val retrofit = Retrofit.Builder()
-                               .baseUrl("https://api.flickr.com/")
+                               .baseUrl("https://reqres.in/api/")
                                .addConverterFactory(MoshiConverterFactory.create())
+                    .client(
+                        OkHttpClient.Builder()
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .addInterceptor(HttpLoggingInterceptor().apply {
+                                level = HttpLoggingInterceptor.Level.BODY
+                            }).build()
+                    )
                                .build()
 
-                api = retrofit.create()
+                               api = retrofit.create()
         }
 
         suspend fun getQuestions(category : String , fieldOfInterest: String)  = api.getQuestions(category , fieldOfInterest)
