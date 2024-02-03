@@ -1,9 +1,11 @@
 package com.hd.quiz.repo
 
 import com.hd.quiz.api.QuizInterface
+import kotlinx.coroutines.flow.Flow
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
@@ -30,4 +32,6 @@ class QuizRepository {
         }
 
         suspend fun getQuestions(category : String , fieldOfInterest: String)  = api.getQuestions(category , fieldOfInterest)
+
+    suspend fun  postAnswer(map: MutableMap<String, String>): Flow<Response<String>> = api.postAnswer(map)
 }

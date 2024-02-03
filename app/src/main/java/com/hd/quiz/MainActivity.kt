@@ -60,7 +60,7 @@ fun Select(){
         ) {
         Text(
             text = "Please Choose your Category and Field Of Interest",
-            fontSize = 30.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(20.dp))

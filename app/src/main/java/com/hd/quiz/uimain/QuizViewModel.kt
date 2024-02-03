@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 
 class QuizViewModel : ViewModel() {
          private val repository = QuizRepository()
@@ -22,6 +23,7 @@ class QuizViewModel : ViewModel() {
           val questions
               get() = _questions.asStateFlow()
     val loading = mutableStateOf(false)
+    val submitted = mutableStateOf(false)
 
 
     suspend fun getQuestions(category: String, field: String) : Flow<Question> {
@@ -38,4 +40,7 @@ class QuizViewModel : ViewModel() {
             }
         }
     }
+    suspend fun postAnswer(map: MutableMap<String, String>): Flow<Response<String>> = repository.postAnswer(map)
+
+
 }
