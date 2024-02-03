@@ -80,16 +80,19 @@ fun Home_Content(viewModel: QuizViewModel , selected : String , selectedCategory
     val update by rememberUpdatedState(newValue = lazy)
     val list2: MutableList<Question> = mutableListOf()
     LaunchedEffect(true){
+        viewModel.loading.value = true
         list2.addAll(viewModel.getQuestions(selectedCategory, selected).toList())
         println("received those $list2")
+        viewModel.loading.value = false
     }
     Scaffold(bottomBar = {
         Icon(Icons.Sharp.Home, contentDescription = null, modifier = Modifier
             .padding(80.dp, 10.dp)
-            .clickable { context.startActivity(Intent(context, MainActivity::class.java)) })
+            .clickable {
+                context.startActivity(Intent(context, MainActivity::class.java)) })
                          },
         ) {
-      if (remember { derivedStateOf { update.firstVisibleItemIndex } }.value != -1) {
+      if (!viewModel.loading.value) {
             LazyColumn(Modifier.padding(paddingValues = it), state = update) {
                 itemsIndexed(list2) { item, index ->
                     TypeQ(question = index)

@@ -1,6 +1,7 @@
 package com.hd.quiz.uimain
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hd.quiz.api.Question
@@ -20,7 +21,7 @@ class QuizViewModel : ViewModel() {
           private var _questions: MutableStateFlow<List<Question>>  =  MutableStateFlow(emptyList())
           val questions
               get() = _questions.asStateFlow()
-
+    val loading = mutableStateOf(false)
 
 
     suspend fun getQuestions(category: String, field: String) : Flow<Question> {
