@@ -15,7 +15,7 @@ class QuizRepository {
         private var api : QuizInterface
         init {
                 val retrofit = Retrofit.Builder()
-                               .baseUrl("https://reqres.in/api/")
+                               .baseUrl("http://10.4.115.0:5027/api/")
                                .addConverterFactory(MoshiConverterFactory.create())
                     .client(
                         OkHttpClient.Builder()
@@ -33,5 +33,5 @@ class QuizRepository {
 
         suspend fun getQuestions(category : String , fieldOfInterest: String)  = api.getQuestions(category , fieldOfInterest)
 
-    suspend fun  postAnswer(map: MutableMap<String, String>): Flow<Response<String>> = api.postAnswer(map)
+    suspend fun  postAnswer(map: MutableMap<String, String>): String= api.postAnswer(map)
 }

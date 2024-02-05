@@ -24,23 +24,33 @@ class QuizViewModel : ViewModel() {
               get() = _questions.asStateFlow()
     val loading = mutableStateOf(false)
     val submitted = mutableStateOf(false)
-
+    val submitClicked = mutableStateOf(false)
 
     suspend fun getQuestions(category: String, field: String) : Flow<Question> {
-       // val question = repository.getQuestions(category , field)
-        delay(3000)
-        return flow{
-           // question.questions.forEach{
-            //    emit(it)
-
-          //  }
-            list.forEach{
-                emit(it)
-                Log.e("VIEWMODEL" , "emitted")
+        Log.e("VIEWMODEL" , "emittion started")
+      //  val question = repository.getQuestions(category , field)
+       // delay(3000)
+        val list2 = mutableListOf<Question>()
+        for(i in list){
+            if(i.fieldOfInterest == field && i.category == category){
+                list2.add(i)
             }
         }
+        return flow{
+          //  question.questions.forEach{
+            //   emit(it)
+
+           //}
+           list2.forEach{
+                emit(it)
+                Log.e("VIEWMODEL" , "emitted")
+           }
+        }
     }
-    suspend fun postAnswer(map: MutableMap<String, String>): Flow<Response<String>> = repository.postAnswer(map)
+    suspend fun postAnswer(map: MutableMap<String, String>): String  {
+        Log.d("VIEWMODEL", "called to post")
+        return repository.postAnswer(map)
+    }
+    }
 
 
-}

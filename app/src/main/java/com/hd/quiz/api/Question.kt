@@ -12,5 +12,6 @@ data class Question(
     val choice3: String? = null,
     val choice4: String? = null,
     val category: String,
-    val fieldOfInterest: String
+    val fieldOfInterest: String,
+    val answer: String
     )
