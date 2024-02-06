@@ -25,9 +25,12 @@ class QuizViewModel : ViewModel() {
     val loading = mutableStateOf(false)
     val submitted = mutableStateOf(false)
     val submitClicked = mutableStateOf(false)
+    val size = mutableStateOf(0)
 
     suspend fun getQuestions(category: String, field: String) : Flow<Question> {
         Log.e("VIEWMODEL" , "emittion started")
+
+        // for the network part enable it
       //  val question = repository.getQuestions(category , field)
        // delay(3000)
         val list2 = mutableListOf<Question>()
@@ -36,6 +39,7 @@ class QuizViewModel : ViewModel() {
                 list2.add(i)
             }
         }
+        size.value = list2.size-2
         return flow{
           //  question.questions.forEach{
             //   emit(it)

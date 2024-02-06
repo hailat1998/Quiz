@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Home
@@ -31,7 +33,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -42,11 +46,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hd.quiz.MainActivity
@@ -93,6 +100,7 @@ class QuizActivity : ComponentActivity() {
 fun Home_Content(viewModel: QuizViewModel , selected : String , selectedCategory: String ) {
     val context = LocalContext.current
     val map = mutableMapOf<String, String>()
+    val checkAnswer = mutableMapOf<String, Pair<Boolean, Boolean>>()
     val lazy = rememberLazyListState()
     val update by rememberUpdatedState(newValue = lazy)
     val list2: MutableList<Question> = mutableListOf()
@@ -110,27 +118,41 @@ fun Home_Content(viewModel: QuizViewModel , selected : String , selectedCategory
     LaunchedEffect(true) {
         viewModel.loading.value = true
         list2.addAll(viewModel.getQuestions(selectedCategory, selected).toList())
-        size.value = list2.size
+        size.value = viewModel.size.value
         Log.d("QUIZACTIVITY" , "questions called")
         println("received those $list2")
         viewModel.loading.value = false
+        for(i in list2){
+            map[i.id] = ""
+        }
+        for(i in list2){
+            checkAnswer[i.id] = Pair(false, false)
+        }
+
     }
     if(viewModel.submitClicked.value) {
         LaunchedEffect(true) {
             viewModel.submitted.value = true
             Log.d("QUIZACTIVITY", "answer called")
-            result.value = "You have got ${updatedCount.value.value} out ${size.value}"
+            result.value = "You have got ${count.value} out ${size.value}"
             delay(3000)
             viewModel.submitted.value = false
         }
     }
     Scaffold(
         bottomBar = { BottomBar(context = context, viewModel = viewModel) },
+        topBar = { Text(
+            text = "Quiz",
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(15.dp),
+            color = Color.White,
+            ) }
     ) {
         if (!viewModel.loading.value && !viewModel.submitClicked.value) {
             LazyColumn(Modifier.padding(paddingValues = it), state = update) {
                 itemsIndexed(list2) { item, index ->
-                    TypeQ(question = index, count)
+                    TypeQ(question = index, count, map, checkAnswer)
                 }
             }
         } else if (!viewModel.loading.value && !viewModel.submitted.value) {
@@ -145,51 +167,69 @@ fun Home_Content(viewModel: QuizViewModel , selected : String , selectedCategory
 
 
 @Composable
-fun TypeQ(question: Question, count : MutableState<Int>){
+fun TypeQ(question: Question, count : MutableState<Int>, map: MutableMap<String, String>, check : MutableMap<String , Pair<Boolean, Boolean>>){
     when(question.typeOfQ){
-        "T/f" -> TorF(question , count)
-        "Choice" -> ChoiceAn(question, count)
-        "fill" -> FillAn(question, count)
+        "T/f" -> TorF(question , count, map, check)
+        "Choice" -> ChoiceAn(question, count, map, check)
+        "fill" -> FillAn(question, count , map, check)
     }
 }
 
 @Composable
-fun TorF(question: Question, count : MutableState<Int>){
+fun TorF(question: Question, count : MutableState<Int> , map: MutableMap<String, String>, ckeck : MutableMap<String , Pair<Boolean, Boolean>>){
    val ans = remember {
-       mutableStateOf("")
+       mutableStateOf(map.getValue(question.id))
    }
     val ansUpdated = rememberUpdatedState(ans.value)
-    if(ansUpdated.value == question.answer){
-        count.value++
+    LaunchedEffect(ans.value){
+        checkAnswer(question, ckeck, count, ans)
     }
     Log.i("main" , "count")
-    Text(text = question.question)
-    Row(
-        Modifier
-            .padding(8.dp)
-            .fillMaxWidth()){
-        RadioButton(selected = ans.value ==  "true", onClick = { ans.value = "true"})
-        Text(text = "True", Modifier.padding(0.dp , 10.dp, 20.dp , 0.dp))
-        RadioButton(selected = ans.value ==  "False", onClick = { ans.value = "False"})
-        Text(text = "False", Modifier.padding(0.dp , 10.dp, 0.dp , 0.dp))
+    Material3Card(modifier = Modifier
+        .padding(10.dp),
+        backgroundColor = Color.DarkGray,
+        shape = RoundedCornerShape(8.dp),
+        elevation = 4.dp,
+    ) {
+        Column {
+            Text(text = question.question)
+            Row(
+                Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                RadioButton(selected = ans.value == "true", onClick = { ans.value = "true" })
+                Text(text = "True", Modifier.padding(0.dp, 10.dp, 20.dp, 0.dp))
+                RadioButton(selected = ans.value == "False", onClick = { ans.value = "False" })
+                Text(text = "False", Modifier.padding(0.dp, 10.dp, 0.dp, 0.dp))
+            }
+        }
     }
+    map[question.id] = ans.value
+
 }
 
 @Composable
-fun ChoiceAn(question: Question, count : MutableState<Int>){
+fun ChoiceAn(question: Question, count : MutableState<Int> , map: MutableMap<String, String>, ckeck : MutableMap<String , Pair<Boolean, Boolean>>){
     val ans = remember {
-        mutableStateOf("")
+        mutableStateOf(map.get(question.id)!!)
     }
     val ansUpdated = rememberUpdatedState(ans.value)
-    if(ansUpdated.value == question.answer){
-        count.value++
+    LaunchedEffect(ans.value){
+        checkAnswer(question, ckeck, count, ans)
     }
+    Material3Card(modifier = Modifier
+        .padding(10.dp),
+        backgroundColor = Color.DarkGray,
+        shape = RoundedCornerShape(8.dp),
+        elevation = 4.dp,
+       ){
 
-    Text(text = question.question)
     Column(
         Modifier
             .fillMaxWidth()
             .padding(10.dp)) {
+        Text(text = question.question)
        Row {
            RadioButton(
                selected = ans.value == question.choice!!,
@@ -213,24 +253,40 @@ fun ChoiceAn(question: Question, count : MutableState<Int>){
         }
        
     }
+    }
+    map[question.id] = ans.value!!
 }
 
 @Composable
-fun FillAn(question: Question, count : MutableState<Int>){
+fun FillAn(question: Question, count : MutableState<Int>, map: MutableMap<String, String>, ckeck : MutableMap<String , Pair<Boolean, Boolean>>) {
     val ans = remember {
-        mutableStateOf("")
+        mutableStateOf(map.get(question.id)!!)
     }
     val ansUpdated = rememberUpdatedState(ans.value)
-    if(ansUpdated.value == question.answer){
-        count.value++
+    LaunchedEffect(ans.value){
+        checkAnswer(question, ckeck, count, ans)
     }
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(10.dp)) {
-        Text(text = question.question)
-        OutlinedTextField(value = ans.value, onValueChange = {ans.value = it}, label = { Text(text = "fill here")} , modifier = Modifier.fillMaxWidth())
+    Material3Card(
+        modifier = Modifier
+            .padding(10.dp),
+        backgroundColor = Color.DarkGray,
+        shape = RoundedCornerShape(8.dp),
+        elevation = 4.dp,
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            Text(text = question.question)
+            OutlinedTextField(
+                value = ans.value!!,
+                onValueChange = { ans.value = it },
+                label = { Text(text = "fill here") },
+                modifier = Modifier.fillMaxWidth())
+        }
     }
+    map[question.id] = ans.value!!
 }
 
 @Composable
@@ -254,16 +310,58 @@ fun ShowResult(result: String, viewModel: QuizViewModel){
             .fillMaxSize()
             .clickable { viewModel.submitted.value = !viewModel.submitted.value },
         contentAlignment = Alignment.Center){
-        Card(
-            Modifier
-                .padding(8.dp)
-                .wrapContentHeight()
-            ) {
-          Text(text =result , fontSize = 16.sp , fontWeight = FontWeight.Bold )
+        Material3Card(modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth(),
+            backgroundColor = Color.DarkGray,
+            shape = RoundedCornerShape(8.dp),
+            elevation = 4.dp,
+        ){
+          Text(text =result , fontSize = 25.sp , fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth() )
         }
     }
 }
 
+
+@Composable
+fun Material3Card(
+    modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.medium       ,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    contentColor: Color = contentColorFor(backgroundColor),
+    border: BorderStroke? = null,
+    elevation: Dp = 1.dp,
+    content: @Composable () -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = backgroundColor,
+        contentColor = contentColor,
+        tonalElevation = elevation,
+        shadowElevation = elevation,
+        border = border,
+        content = content
+    )
+}
+
+fun checkAnswer(question: Question,  map : MutableMap<String, Pair<Boolean, Boolean>>, count: MutableState<Int>, ans: MutableState<String>){
+    if((map[question.id]?.first)!!){
+        if((map[question.id]?.second)!! && ans.value != question.answer){
+            count.value--
+            map[question.id] = map[question.id]?.copy(second = false)!!
+        }
+    }else{
+        if(ans.value == question.answer){
+            count.value++
+            map[question.id] = map[question.id]?.copy(second = true)!!
+            map[question.id] = map[question.id]?.copy(first =  true)!!
+        }else{
+            map[question.id] = map[question.id]?.copy(second = true)!!
+            map[question.id] = map[question.id]?.copy(first =  false)!!
+        }
+    }
+}
 
 @Preview
 @Composable

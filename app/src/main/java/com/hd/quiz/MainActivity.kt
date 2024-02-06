@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,70 +61,137 @@ fun Select(){
     var selected by remember { mutableStateOf("Science") }
     var selectedCategory by remember { mutableStateOf("Student") }
     val context = LocalContext.current
-    Column(verticalArrangement = Arrangement.Center,
-        // horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
+    val showhelp = remember {
+        mutableStateOf(false)
+    }
+    Column {
+       Row {
+           Text(
+               text = "QUIZ", fontSize = 26.sp, fontWeight = FontWeight.Bold, modifier = Modifier
+           )
+           Icon(
+               painter = painterResource(id = R.drawable.info_24px),
+               contentDescription = null,
+               modifier = Modifier
+                   .clickable { showhelp.value = !showhelp.value }
+                   .padding(250.dp, 0.dp, 0.dp, 0.dp))
+
+       }
+
+        if (showhelp.value) {
+            Text(text = "category refers to what you are and field of interest is your  interest area.")
+        }
+    }
+    Box(
+
+    ) {
+        Surface(
+            Modifier.fillMaxSize()
+                .padding(10.dp, 90.dp, 10.dp, 120.dp),
+               color =  Color.DarkGray,
+            shape = RoundedCornerShape(10.dp)
         ) {
-        Text(
-            text = "Please Choose your Category and Field Of Interest",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(10.dp))
+
+            Column {
+                Text(
+                    text = "Please Choose your Category and Field Of Interest",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(10.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
 
 
-        Text(text = "Field Of Interest", fontSize = 18.sp)
-        Row(Modifier.padding(10.dp)) {
-            RadioButton(selected = selected == "Science" , onClick = { selected = "Science" })
-            Text(text = "Science" ,
-                Modifier.clickable { selected = "Science" }.padding(0.dp, 10.dp, 0.dp, 0.dp))
-            RadioButton(selected = selected == "History" , onClick = { selected = "History" })
-            Text(text = "History" ,
-                Modifier.clickable { selected = "History" }.padding(0.dp, 10.dp, 0.dp, 0.dp))
-            RadioButton(selected = selected == "Social" , onClick = { selected = "Social" })
-            Text(text = "Social" ,
-                Modifier.clickable { selected = "Social" }.padding(0.dp, 10.dp, 0.dp, 0.dp))
+                Text(text = "Field Of Interest", fontSize = 18.sp)
+                Row(Modifier.padding(10.dp)) {
+                    RadioButton(
+                        selected = selected == "Science",
+                        onClick = { selected = "Science" })
+                    Text(text = "Science",
+                        Modifier
+                            .clickable { selected = "Science" }
+                            .padding(0.dp, 10.dp, 0.dp, 0.dp))
+                    RadioButton(
+                        selected = selected == "History",
+                        onClick = { selected = "History" })
+                    Text(text = "History",
+                        Modifier
+                            .clickable { selected = "History" }
+                            .padding(0.dp, 10.dp, 0.dp, 0.dp))
+                    RadioButton(selected = selected == "Social", onClick = { selected = "Social" })
+                    Text(text = "Social",
+                        Modifier
+                            .clickable { selected = "Social" }
+                            .padding(0.dp, 10.dp, 0.dp, 0.dp))
+                }
+                Text(text = "Category", fontSize = 18.sp)
+                Row(Modifier.padding(10.dp)) {
+                    RadioButton(
+                        selected = selectedCategory == "Student",
+                        onClick = { selectedCategory = "Student" })
+                    Text(text = "Student", modifier = Modifier
+                        .clickable { selectedCategory = "Student" }
+                        .padding(0.dp, 10.dp, 0.dp, 0.dp))
+
+                    RadioButton(
+                        selected = selectedCategory == "Worker",
+                        onClick = { selectedCategory = "Worker" })
+                    Text(text = "Worker", modifier = Modifier
+                        .clickable { selectedCategory = "Worker" }
+                        .padding(0.dp, 10.dp, 0.dp, 0.dp))
+
+                    RadioButton(
+                        selected = selectedCategory == "Adult",
+                        onClick = { selectedCategory = "Adult" })
+                    Text(text = "Adult", modifier = Modifier
+                        .clickable { selectedCategory = "Adult" }
+                        .padding(0.dp, 10.dp, 0.dp, 0.dp))
+
+                }
+
+                Button(onClick = {
+                    context.startActivity(
+                        QuizActivity.newIntent(
+                            context,
+                            selectedCategory,
+                            selected
+                        )
+                    )
+                }) {
+                    Icon(
+                        Icons.Filled.ArrowForward,
+                        contentDescription = null,
+                        Modifier.fillMaxWidth()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                Divider(thickness = 8.dp)
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "Or",
+                    color = Color.LightGray,
+                    modifier = Modifier
+                        .padding(16.dp, 0.dp, 0.dp, 80.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+
+                Button(
+                    onClick = { /*context.startActivity(SubmitActivity.newIntent(context))*/ },
+                    shape = MaterialTheme.shapes.large,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Submit question",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                }
+            }
         }
-        Text(text = "Category", fontSize = 18.sp)
-        Row(Modifier.padding(10.dp)){
-            RadioButton(selected = selectedCategory == "Student" , onClick = { selectedCategory = "Student" })
-            Text(text = "Student", modifier = Modifier.clickable { selectedCategory = "Student" }.padding(0.dp, 10.dp, 0.dp, 0.dp))
 
-            RadioButton(selected = selectedCategory == "Worker" , onClick = { selectedCategory = "Worker" })
-            Text(text = "Worker", modifier = Modifier.clickable { selectedCategory = "Worker" }.padding(0.dp, 10.dp, 0.dp, 0.dp))
-
-            RadioButton(selected = selectedCategory == "Adult" , onClick = { selectedCategory = "Adult" })
-            Text(text = "Adult", modifier = Modifier.clickable { selectedCategory = "Adult" }.padding(0.dp, 10.dp, 0.dp, 0.dp))
-
-        }
-
-        Button(onClick = { context.startActivity(QuizActivity.newIntent(context , selectedCategory , selected)) }) {
-            Icon(Icons.Filled.ArrowForward , contentDescription = null , Modifier.fillMaxWidth())
-        }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            Divider(thickness = 8.dp)
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(text = "Or",
-                color = Color.LightGray,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center )
-
-        Button(onClick = { /*context.startActivity(SubmitActivity.newIntent(context))*/ },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth()
-            ) {
-            Text(
-                text = "Submit question",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-        }
     }
 }
